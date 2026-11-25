@@ -146,7 +146,7 @@
     // Khôi phục theme và Worker URL đã lưu
     const savedTheme = localStorage.getItem("litaco_theme") || "light";
     setTheme(savedTheme);
-    workerInput.value = localStorage.getItem("litaco_worker_url") || "";
+    workerInput.value = localStorage.getItem("litaco_worker_url") || "https://lita-bill-proxy.trustlee-gjd.workers.dev";
 
     themeBtn.addEventListener("click", () => {
       const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
