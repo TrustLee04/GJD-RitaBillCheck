@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Litaco Express - Kiểm Tra, Tải & In Ảnh Bill</title>
+    <title>Litaco Express - Tải Hàng Loạt Ảnh Vận Đơn</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -24,7 +24,7 @@
             }
         }
     </script>
-    <!-- FontAwesome, JSZip & FileSaver -->
+    <!-- FontAwesome & JSZip libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -35,63 +35,6 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 9999px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.7); }
-
-        /* Ẩn vùng in trên màn hình thường */
-        #printArea {
-            display: none;
-        }
-
-        /* Cấu hình in A5, không scale/bóp méo ảnh, mỗi ảnh 1 trang */
-        @media print {
-            @page {
-                size: A5;
-                margin: 0;
-            }
-
-            html, body {
-                margin: 0 !important;
-                padding: 0 !important;
-                background: #ffffff !important;
-            }
-
-            body > header,
-            body > main {
-                display: none !important;
-            }
-
-            #printArea {
-                display: block !important;
-                width: 100%;
-                margin: 0;
-                padding: 0;
-            }
-
-            .print-page {
-                width: 100%;
-                height: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                page-break-after: always;
-                break-after: page;
-                overflow: hidden;
-            }
-
-            .print-page:last-child {
-                page-break-after: auto;
-                break-after: auto;
-            }
-
-            .print-page img {
-                display: block;
-                width: auto !important;
-                height: auto !important;
-                max-width: 100%;
-                max-height: 100%;
-                transform: none !important;
-                zoom: 1 !important;
-            }
-        }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
@@ -104,13 +47,14 @@
                     <i class="fa-solid fa-file-invoice flex-shrink-0 text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">Công Cụ Tra, Tải & In Bill Litaco</h1>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Kiểm tra hàng loạt mã vận đơn, tải ZIP hoặc in khổ A5 (lita.com.vn)</p>
+                    <h1 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">Công Cụ Tải Ảnh Bill Litaco</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Tra cứu và tải hàng loạt ảnh trạng thái đơn (lita.com.vn)</p>
                 </div>
             </div>
 
             <div class="flex items-center space-x-3">
-                <button id="themeToggle" type="button" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors" title="Chuyển giao diện Sáng / Tối">
+                <!-- Theme Switcher -->
+                <button id="themeToggle" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors" title="Chuyển giao diện Sáng / Tối">
                     <i id="themeIcon" class="fa-solid fa-moon"></i>
                 </button>
             </div>
@@ -138,10 +82,10 @@
                     placeholder="Dán danh sách mã vận đơn vào đây (mỗi mã một dòng)..."></textarea>
 
                 <div class="flex flex-wrap gap-2 text-xs">
-                    <button id="btnSample" type="button" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium transition">
+                    <button id="btnSample" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium transition">
                         <i class="fa-solid fa-flask mr-1"></i> Dữ Liệu Mẫu
                     </button>
-                    <button id="btnClear" type="button" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium transition">
+                    <button id="btnClear" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium transition">
                         <i class="fa-solid fa-broom mr-1"></i> Xóa Trắng
                     </button>
                 </div>
@@ -151,13 +95,13 @@
             <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
                 <h2 class="font-semibold text-sm text-slate-700 dark:text-slate-200 flex items-center gap-2">
                     <i class="fa-solid fa-sliders text-brand-600 dark:text-brand-500"></i>
-                    Cấu Hình Tải & In Ấn
+                    Cấu Hình Tải Xuống
                 </h2>
 
                 <div class="space-y-3 text-xs">
                     <!-- File Naming Strategy -->
                     <div>
-                        <label class="block font-medium text-slate-600 dark:text-slate-400 mb-1">Kiểu Đặt Tên File (Khi Tải ZIP)</label>
+                        <label class="block font-medium text-slate-600 dark:text-slate-400 mb-1">Kiểu Đặt Tên File</label>
                         <select id="namingMode" class="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-brand-500">
                             <option value="sequential" selected>Đánh số thứ tự (1.jpg, 2.jpg, 3.jpg)</option>
                             <option value="code">Theo mã vận đơn (E60118927.jpg, TW261020418.jpg)</option>
@@ -180,19 +124,15 @@
                         <label class="block font-medium text-slate-600 dark:text-slate-400 mb-1">Thời Gian Nghỉ Giữa Các Lần Gọi (ms)</label>
                         <input type="number" id="requestDelay" value="600" min="100" max="5000" step="100" class="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-brand-500">
                     </div>
-
-                    <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 text-[11px] text-slate-500 dark:text-slate-400">
-                        Chế độ in: Khổ giấy <strong>A5</strong> • Không scale/bóp méo • Dọc/ngang theo tỷ lệ gốc của từng ảnh.
-                    </div>
                 </div>
             </div>
 
             <!-- Action Controls -->
             <div class="flex flex-col gap-3">
-                <button id="btnStart" type="button" class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
-                    <i class="fa-solid fa-magnifying-glass"></i> Bắt Đầu Kiểm Tra
+                <button id="btnStart" class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fa-solid fa-play"></i> Bắt Đầu Tra & Gom Ảnh
                 </button>
-                <button id="btnStop" type="button" disabled class="w-full py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow transition flex items-center justify-center gap-2 text-xs disabled:opacity-40 disabled:cursor-not-allowed">
+                <button id="btnStop" disabled class="w-full py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl shadow transition flex items-center justify-center gap-2 text-xs disabled:opacity-40 disabled:cursor-not-allowed">
                     <i class="fa-solid fa-stop"></i> Dừng Lại
                 </button>
             </div>
@@ -209,12 +149,9 @@
                         <h2 class="font-semibold text-base text-slate-900 dark:text-white">Tiến Độ Xử Lý</h2>
                         <p id="progressStatusText" class="text-xs text-slate-500 dark:text-slate-400">Sẵn sàng bắt đầu</p>
                     </div>
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <button id="btnDownloadZip" type="button" disabled class="px-3.5 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl text-xs shadow transition flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <div class="flex items-center gap-2">
+                        <button id="btnDownloadZip" disabled class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl text-xs shadow transition flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
                             <i class="fa-solid fa-file-zipper text-sm"></i> Tải File ZIP
-                        </button>
-                        <button id="btnPrintNow" type="button" disabled class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl text-xs shadow transition flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                            <i class="fa-solid fa-print text-sm"></i> In Ảnh
                         </button>
                     </div>
                 </div>
@@ -255,7 +192,7 @@
             <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex-1 flex flex-col overflow-hidden min-h-[350px]">
                 <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
                     <h3 class="font-semibold text-sm text-slate-800 dark:text-slate-200">Danh Sách Kết Quả</h3>
-                    <span class="text-xs text-slate-400">Kiểm tra xong bấm Tải File ZIP hoặc In Ảnh</span>
+                    <span class="text-xs text-slate-400">Chạy xong hết mới tự tải file ZIP</span>
                 </div>
 
                 <div class="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar" id="queueList">
@@ -263,7 +200,7 @@
                     <div id="emptyState" class="h-full flex flex-col items-center justify-center text-center p-8 text-slate-400">
                         <i class="fa-solid fa-box-open text-4xl mb-3 text-slate-300 dark:text-slate-600"></i>
                         <p class="text-sm">Chưa có mã đơn hàng nào.</p>
-                        <p class="text-xs text-slate-400 mt-1">Dán danh sách mã ở cột bên trái và bấm "Bắt Đầu Kiểm Tra".</p>
+                        <p class="text-xs text-slate-400 mt-1">Dán danh sách mã ở cột bên trái và bấm "Bắt Đầu Tra & Gom Ảnh".</p>
                     </div>
                 </div>
             </div>
@@ -271,9 +208,6 @@
         </div>
 
     </main>
-
-    <!-- Vùng dựng ảnh phục vụ in A5 -->
-    <div id="printArea" aria-hidden="true"></div>
 
     <script>
         const SAMPLE_CODES = [
@@ -294,7 +228,6 @@
         const btnStart = document.getElementById('btnStart');
         const btnStop = document.getElementById('btnStop');
         const btnDownloadZip = document.getElementById('btnDownloadZip');
-        const btnPrintNow = document.getElementById('btnPrintNow');
         const namingMode = document.getElementById('namingMode');
         const corsProxy = document.getElementById('corsProxy');
         const requestDelay = document.getElementById('requestDelay');
@@ -310,7 +243,6 @@
         const statPending = document.getElementById('statPending');
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
-        const printArea = document.getElementById('printArea');
 
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -361,7 +293,6 @@
             if (successItems.length === 0) return;
 
             btnDownloadZip.disabled = true;
-            btnPrintNow.disabled = true;
             btnDownloadZip.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sm"></i> Đang nén ZIP...`;
 
             try {
@@ -377,43 +308,11 @@
             } catch (err) {
                 alert("Không thể tạo file ZIP: " + err.message);
             } finally {
+                btnDownloadZip.disabled = false;
                 btnDownloadZip.innerHTML = `<i class="fa-solid fa-file-zipper text-sm"></i> Tải File ZIP`;
-                updateActionButtonsState();
             }
         }
 
-        async function openPrintDialogForSuccess() {
-            const successItems = queue.filter(q => q.status === 'success' && q.objectUrl);
-            if (successItems.length === 0) return;
-
-            printArea.innerHTML = '';
-
-            for (const item of successItems) {
-                const pageDiv = document.createElement('div');
-                pageDiv.className = 'print-page';
-
-                const img = document.createElement('img');
-                img.src = item.objectUrl;
-                img.alt = `Bill ${item.index} - ${item.code_bill}`;
-                img.dataset.orientation = item.orientation || 'portrait';
-
-                pageDiv.appendChild(img);
-                printArea.appendChild(pageDiv);
-            }
-
-            const imgs = Array.from(printArea.querySelectorAll('img'));
-            await Promise.all(imgs.map(img => {
-                if (img.complete) return Promise.resolve();
-                return new Promise(resolve => {
-                    img.onload = resolve;
-                    img.onerror = resolve;
-                });
-            }));
-
-            window.print();
-        }
-
-        // btnStart chỉ thực hiện kiểm tra và gom ảnh vào hàng đợi
         btnStart.addEventListener('click', async () => {
             const codes = getParsedCodes();
             if (codes.length === 0) {
@@ -426,11 +325,6 @@
             btnStart.disabled = true;
             btnStop.disabled = false;
             billInput.disabled = true;
-            updateActionButtonsState();
-
-            queue.forEach(q => {
-                if (q.objectUrl) URL.revokeObjectURL(q.objectUrl);
-            });
 
             const mode = namingMode.value;
             queue = codes.map((code, idx) => ({
@@ -440,8 +334,6 @@
                 status: 'pending',
                 imageUrl: null,
                 blob: null,
-                objectUrl: null,
-                orientation: 'portrait',
                 errorMsg: ''
             }));
 
@@ -455,7 +347,7 @@
 
             for (let i = 0; i < queue.length; i++) {
                 if (shouldStop) {
-                    progressStatusText.textContent = 'Đã dừng kiểm tra theo yêu cầu.';
+                    progressStatusText.textContent = 'Đã dừng xử lý theo yêu cầu.';
                     break;
                 }
 
@@ -464,7 +356,7 @@
                 updateItemUI(item);
                 updateStatsUI();
 
-                progressStatusText.textContent = `Đang kiểm tra mã ${item.index}/${queue.length}: ${item.code_bill}...`;
+                progressStatusText.textContent = `Đang tra mã ${item.index}/${queue.length}: ${item.code_bill}...`;
 
                 try {
                     let htmlContent = '';
@@ -522,26 +414,13 @@
                     if (!imgRes.ok) throw new Error(`Lỗi tải ảnh HTTP ${imgRes.status}`);
 
                     const blob = await imgRes.blob();
-                    const objectUrl = URL.createObjectURL(blob);
                     item.blob = blob;
-                    item.objectUrl = objectUrl;
-
-                    await new Promise(resolve => {
-                        const probe = new Image();
-                        probe.onload = () => {
-                            item.orientation = probe.naturalWidth >= probe.naturalHeight ? 'landscape' : 'portrait';
-                            resolve();
-                        };
-                        probe.onerror = resolve;
-                        probe.src = objectUrl;
-                    });
-
                     item.status = 'success';
 
                 } catch (err) {
                     console.error(`Lỗi xử lý mã ${item.code_bill}:`, err);
                     item.status = 'error';
-                    item.errorMsg = err.message || 'Không lấy được ảnh';
+                    item.errorMsg = err.message || 'Không tải được ảnh';
                 }
 
                 updateItemUI(item);
@@ -556,13 +435,17 @@
             btnStart.disabled = false;
             btnStop.disabled = true;
             billInput.disabled = false;
-            updateActionButtonsState();
+            updateZipButtonState();
 
             if (!shouldStop) {
                 const successCount = queue.filter(q => q.status === 'success' && q.blob).length;
-                progressStatusText.textContent = successCount > 0
-                    ? `Kiểm tra hoàn tất! Có ${successCount} ảnh sẵn sàng để Tải File ZIP hoặc In Ảnh.`
-                    : 'Kiểm tra hoàn tất nhưng không có ảnh nào hợp lệ.';
+                if (successCount > 0) {
+                    progressStatusText.textContent = `Đã tra xong! Đang nén và tải ${successCount} ảnh dạng ZIP...`;
+                    await downloadSuccessAsZip();
+                    progressStatusText.textContent = `Hoàn tất! Đã tải file ZIP (${successCount} ảnh).`;
+                } else {
+                    progressStatusText.textContent = 'Đã xử lý xong nhưng không có ảnh nào tải được.';
+                }
             }
         });
 
@@ -598,11 +481,12 @@
             } else if (item.status === 'fetching') {
                 statusBadge = `<span class="px-2.5 py-1 text-[11px] font-semibold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 rounded-md flex items-center gap-1.5"><i class="fa-solid fa-spinner fa-spin text-xs"></i> Đang lấy</span>`;
             } else if (item.status === 'success') {
-                const orientLabel = item.orientation === 'landscape' ? 'Ngang' : 'Dọc';
-                statusBadge = `<span class="px-2.5 py-1 text-[11px] font-semibold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 rounded-md flex items-center gap-1"><i class="fa-solid fa-check text-xs"></i> Sẵn sàng (${orientLabel})</span>`;
+                statusBadge = `<span class="px-2.5 py-1 text-[11px] font-semibold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 rounded-md flex items-center gap-1"><i class="fa-solid fa-check text-xs"></i> Đã gom (${item.fileName})</span>`;
             } else if (item.status === 'error') {
                 statusBadge = `<span class="px-2.5 py-1 text-[11px] font-semibold bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-400 rounded-md flex items-center gap-1" title="${item.errorMsg}"><i class="fa-solid fa-triangle-exclamation text-xs"></i> Lỗi</span>`;
             }
+
+            const imgPreview = item.blob ? URL.createObjectURL(item.blob) : '';
 
             return `
                 <div class="flex items-center space-x-3 overflow-hidden">
@@ -611,13 +495,18 @@
                     </span>
                     <div class="min-w-0">
                         <div class="font-mono text-xs font-bold text-slate-900 dark:text-white truncate">${item.code_bill}</div>
-                        <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">${item.fileName} • Trang in #${item.index} ${item.errorMsg ? `<span class="text-rose-500">(${item.errorMsg})</span>` : ''}</div>
+                        <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">${item.fileName} ${item.errorMsg ? `<span class="text-rose-500">(${item.errorMsg})</span>` : ''}</div>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-3 flex-shrink-0">
-                    ${item.objectUrl ? `<img src="${item.objectUrl}" class="w-10 h-10 object-cover rounded-lg border border-slate-300 dark:border-slate-700 cursor-pointer" onclick="window.open('${item.objectUrl}', '_blank')" title="Bấm để xem ảnh lớn">` : ''}
+                    ${imgPreview ? `<img src="${imgPreview}" class="w-10 h-10 object-cover rounded-lg border border-slate-300 dark:border-slate-700 cursor-pointer" onclick="window.open('${imgPreview}', '_blank')" title="Bấm để xem ảnh lớn">` : ''}
                     ${statusBadge}
+                    ${item.blob ? `
+                        <button onclick="downloadSingleItem(${item.index})" class="p-1.5 text-slate-500 hover:text-brand-600 dark:hover:text-brand-400 transition" title="Tải riêng ảnh này">
+                            <i class="fa-solid fa-download"></i>
+                        </button>
+                    ` : ''}
                 </div>
             `;
         }
@@ -628,6 +517,13 @@
                 el.innerHTML = getItemHTML(item);
             }
         }
+
+        window.downloadSingleItem = function(index) {
+            const item = queue.find(q => q.index === index);
+            if (item && item.blob) {
+                saveAs(item.blob, item.fileName);
+            }
+        };
 
         function updateStatsUI() {
             const total = queue.length;
@@ -646,17 +542,15 @@
             progressPercent.textContent = `${pct}%`;
             progressCounter.textContent = `${completed} / ${total}`;
 
-            updateActionButtonsState();
+            updateZipButtonState();
         }
 
-        function updateActionButtonsState() {
-            const hasSuccess = queue.some(q => q.status === 'success' && q.blob);
-            btnDownloadZip.disabled = !hasSuccess || isProcessing;
-            btnPrintNow.disabled = !hasSuccess || isProcessing;
+        function updateZipButtonState() {
+            const successItems = queue.filter(q => q.status === 'success');
+            btnDownloadZip.disabled = successItems.length === 0;
         }
 
         btnDownloadZip.addEventListener('click', downloadSuccessAsZip);
-        btnPrintNow.addEventListener('click', openPrintDialogForSuccess);
 
         updateCodeCount();
     </script>
